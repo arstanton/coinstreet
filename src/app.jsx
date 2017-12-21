@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
-import { Header } from "./header.js";
-import { SubNav } from "./sub-nav.js";
+import { Header } from "./header.jsx";
+import { SubNav } from "./sub-nav.jsx";
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -18,7 +18,7 @@ const columns = [
 	{ Header: 'Volume', accessor: 'column' }, 
 	{ Header: 'Circulating Supply', accessor: 'circulationSupply' }
 ];
-
+ 
 class App extends React.Component {
 	render() {
 		return (
@@ -26,7 +26,7 @@ class App extends React.Component {
 				<div className="Header">
 					<Header />
 				</div>
-				<h1 className="display-4 text-center">Cryptocurrency Market Tracking</h1>
+				<h1 id="header-title" className="display-4 text-center">Cryptocurrency Market Tracking</h1>
 				<div className="container">
 					<SubNav />
 					<ReactTable
