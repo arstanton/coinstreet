@@ -1,6 +1,7 @@
 import React from "react";
-import { Header } from "./header.js";
-import { SubNav } from "./sub-nav.js";
+import { Header } from "./header.jsx";
+import { SubNav } from "./sub-nav.jsx";
+
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
