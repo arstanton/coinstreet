@@ -1,15 +1,16 @@
 {
-    "name": "coinstreet",
+    "name": "coinstreet-backend",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
         "babel-register": "^6.26.0",
-        "gdax": "^0.4.2",
-        "react": "^16.2.0",
-        "react-dom": "^16.2.0",
-        "react-scripts": "1.0.17",
-        "react-table": "^6.7.5",
-        "socket.io": "^2.0.4"
+        "bitfinex-api-node": "^1.2.1",
+        "cors": "^2.8.4",
+        "express": "^4.16.2",
+        "http": "0.0.0",
+        "request-promise": "^4.2.2",
+        "socket.io": "^2.0.4",
+        "websocket": "^1.0.25"
     },
     "scripts": {
         "start": "react-scripts start",

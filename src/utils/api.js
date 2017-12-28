@@ -1,6 +1,6 @@
 export const getPrices = async currency_pair => {
     try {
-        let response = await fetch("/prices/BTC-USD", {
+        let response = await fetch("http://localhost:8080/prices/BTC-USD", {
             headers: {
                 "Content-Type": "application/json"
             }
