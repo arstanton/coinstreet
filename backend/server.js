@@ -17,15 +17,6 @@ const HOST = "0.0.0.0";
 app.use(express.static("public"));
 app.use(cors());
 
-// Routes
-app.get("/", async (req, res) => {
-    res.sendFile("views/index.html", { root: __dirname });
-});
-
-app.get("/prices/:currency_pair", async (req, res) => {
-    res.json(await coinbase.getPrice(req.params.currency_pair, "SPOT"));
-});
-
 // Setup web server and socket.io server.
 // const server = http.createServer(app);
 const server = app.listen(PORT, HOST, () => {
