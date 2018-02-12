@@ -1,11 +1,21 @@
 import express from "express";
 import Server from "socket.io";
 import cors from "cors";
-import GDAX from "./api/gdax";
-import Bitfinex from "./api/bitfinex";
-import request from "request-promise";
+import { MongoClient } from 'mongodb';
+import dotenv from "dotenv";
+
+import GDAX from "./lib/gdax";
+import Bitfinex from "./lib/bitfinex";
+import Gemini from "./lib/gemini";
+import Kraken from "./lib/kraken";
+import Bitstamp from "./lib/bitstamp";
+import Bithumb from "./lib/bithumb";
+import Poloniex from "./lib/poloniex";
+import Bittrex from "./lib/bittrex";
 
 const app = express();
+
+dotenv.config({ path: '../.env' });
 
 const PORT = 8080;
 const HOST = "0.0.0.0";
@@ -14,8 +24,6 @@ const HOST = "0.0.0.0";
 app.use(express.static("../public"));
 app.use(cors());
 
-// Setup web server and socket.io server.
-// const server = http.createServer(app);
 const server = app.listen(PORT, HOST, () => {
     console.log(`Started backend on ${HOST}:${PORT}`);
 });
@@ -24,61 +32,49 @@ const io = new Server(server);
 io.set("origins", "localhost:*", "*");
 
 // Use this when client emits an event to server.
-io.on("connected", message => {
-    console.log(`I got a message ${message}`);
+io.on("connection", async () => {
+	let staticData = await getStaticData();
+	io.emit('staticData', staticData);
 });
 
 const gdax = new GDAX(io);
-gdax.start();
-
 const bfx = new Bitfinex(io);
-bfx.start();
+const gem = new Gemini(io);
+const kraken = new Kraken(io);
+const bitstamp = new Bitstamp(io);
+const bithumb = new Bithumb(io);
+const poloniex = new Poloniex(io);
+const bittrex = new Bittrex(io);
 
-// setInterval(async () => {
-//     // io.emit("coinbase_api", await coinbase.getPrice("BTC-USD", "SPOT"));
-//     const response = await request(
-//         "https://api.binance.com/api/v1/ticker/allPrices"
-//     );
-//     io.emit("binance_data", response);
-// }, 5000);
+(async function getAveragedData() {
+	// return setInterval(async () => {
+		let masterData = [
+			await gdax.start(), await bfx.start(), await gem.start()]
+			// await kraken.start(), await bitstamp.start(), await bithumb.start(), 
+			// await poloniex.start(), await bittrex.start()
+		// ];
+		let coins = {}
+		let btc = [];
 
+		masterData.forEach((obj) => {
+			Object.entries(obj).forEach(([key, value]) => {
+				if (key.includes("BTC") && key.includes("USD")) {
+					btc.push(parseFloat(value.last));
+				} else if (key.includes("BTC") && !key.includes("USD")) {
+					let symbol = key.split("BTC").filter(val => val)[0];
 
-// const BFX = require("bitfinex-api-node");
+				}
+			});
+		});
+		// print(coins)
+		// btc = (btc.reduce((x, y) => x + y)) / btc.length;
+	// }, 30000);
+}
 
-// const API_KEY = "secret";
-// const API_SECRET = "secret";
+async function getStaticData() { 
+	const uri = "mongodb://csadmin:Miche11e.@coinstreet-shard-00-00-jzu6z.mongodb.net:27017,coinstreet-shard-00-01-jzu6z.mongodb.net:27017,coinstreet-shard-00-02-jzu6z.mongodb.net:27017/test?ssl=true&replicaSet=coinstreet-shard-0&authSource=admin";
+	const db = await MongoClient.connect(uri);
+	const collection = await db.db("coinstreet").collection("coins");
+	return await collection.find().sort({ market_cap: -1 }).toArray();
+})();
 
-// const opts = {
-//     version: 2,
-//     transform: true
-// };
-
-// const bws = new BFX(API_KEY, API_SECRET, opts).ws;
-// bws.on("auth", () => {
-//     // emitted after .auth()
-//     // needed for private api endpoints
-
-//     console.log("authenticated");
-//     // bws.submitOrder ...
-// });
-
-// bws.on("open", () => {
-//     bws.subscribeTicker("BTCUSD");
-
-//     // authenticate
-//     // bws.auth()
-// });
-
-// bws.on("orderbook", (pair, book) => {
-//     console.log("Order book:", book);
-// });
-
-// bws.on("trade", (pair, trade) => {
-//     console.log("Trade:", trade);
-// });
-// let tickers = {};
-// bws.on("ticker", (pair, ticker) => {
-//     console.log(pair, " Ticker:", ticker);
-// });
-
-// bws.on("error", console.error);
